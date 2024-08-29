@@ -27,8 +27,7 @@
 
 // Functions
 
-uint32_t bit_config(uint32_t word, uint32_t bit_number, uint32_t bit_value)
-{
+uint32_t bit_config(uint32_t word, uint32_t bit_number, uint32_t bit_value) {
     uint32_t word_temp = word;
     word_temp ^= (-bit_value ^ word_temp) & (1 << bit_number);
     return word_temp;
@@ -36,8 +35,7 @@ uint32_t bit_config(uint32_t word, uint32_t bit_number, uint32_t bit_value)
 
 // Write one character to the LCD
 
-void LCD_Write(uint8_t character, uint8_t RS)
-{
+void LCD_Write(uint8_t character, uint8_t RS) {
     uint8_t data = LCD_DATA;
 
     data = ((character >> 4) & 0x0F); // Shift upper 4 bits
@@ -53,8 +51,7 @@ void LCD_Write(uint8_t character, uint8_t RS)
 
 // Errase LCD
 
-void LCD_Clear(void)
-{
+void LCD_Clear(void) {
     LCD_Write(0x01, 0); // Errase LCD's RAM and set the cursor
     // to position 0x00
     __delay_ms(2); // Wait for execution of the command
@@ -62,52 +59,46 @@ void LCD_Clear(void)
 
 // Write a text into LCD
 
-void LCD_Text(const char *s)
-{
-    while (*s)
-    {
+void LCD_Text(const char *s) {
+    while (*s) {
         LCD_Write(*s++, 1);
     }
 }
 
 // Write a single character to LCD
 
-void LCD_Char(char c)
-{
+void LCD_Char(char c) {
     LCD_Write(c, 1); // Sendet einzelnes Zeichen an LCD
 }
 
 // Set cursor position
 
-void LCD_Goto(uint8_t row, uint8_t pos)
-{
+void LCD_Goto(uint8_t row, uint8_t pos) {
     uint8_t data;
 
-    switch (row)
-    {
-    case 0: // 1. Row
-        data = 0x80 + 0x00 + pos;
-        break;
+    switch (row) {
+        case 0: // 1. Row
+            data = 0x80 + 0x00 + pos;
+            break;
 
-    case 1: // 2. Row
-        data = 0x80 + 0x40 + pos;
-        break;
+        case 1: // 2. Row
+            data = 0x80 + 0x40 + pos;
+            break;
 
-    case 2: // 3. Row
-        data = 0x80 + 0x10 + pos;
-        break;
+        case 2: // 3. Row
+            data = 0x80 + 0x10 + pos;
+            break;
 
-    case 3: // 4. Row
-        data = 0x80 + 0x50 + pos;
-        break;
+        case 3: // 4. Row
+            data = 0x80 + 0x50 + pos;
+            break;
     }
     LCD_Write(data, 0);
 }
 
 // Initializes the LCD Display. Call this function before any other LCD functions!
 
-void LCD_Init()
-{
+void LCD_Init() {
     LCD_DIR = LCD_DIR & 0b11010000u;
     LCD_EN_DIR = 0;
     LCD_RW_DIR = 0;
@@ -145,8 +136,7 @@ void LCD_Init()
 // zeros:       0 = zeros are not suppressed
 //              1 = zeros are suppressed
 
-void LCD_Int(uint32_t value, uint8_t positions, uint8_t zeros)
-{
+void LCD_Int(uint32_t value, uint8_t positions, uint8_t zeros) {
     uint16_t i; // Counter
     uint8_t buf[8]; // char-String f?r Ergebnis der Umwandlung
 
@@ -170,8 +160,7 @@ void LCD_Int(uint32_t value, uint8_t positions, uint8_t zeros)
 
 // Writes an unsigned integer value to LCD and displays it in Hex
 
-void LCD_Hex(uint16_t value)
-{
+void LCD_Hex(uint16_t value) {
     uint16_t i; // Counter
     uint8_t buf[4]; // char-String f?r Ergebnis der Umwandlung
 
@@ -191,8 +180,7 @@ void LCD_Hex(uint16_t value)
 
 // Writes an unsigned integer value to LCD and displays it in Binary
 
-void LCD_Bin(uint8_t value)
-{
+void LCD_Bin(uint8_t value) {
     uint16_t i; // Counter
     uint8_t buf[8]; // char-String f?r Ergebnis der Umwandlung
 
@@ -211,16 +199,14 @@ void LCD_Bin(uint8_t value)
 // positions:   positions before decimal point (min.2)
 // decimal_pos: positions after decimal point (min.1)
 
-void LCD_Float(float value, uint8_t positions, uint8_t decimal_pos)
-{
+void LCD_Float(float value, uint8_t positions, uint8_t decimal_pos) {
     uint8_t i; // Z?hlvariable
     uint32_t number; // Ganzzahliger Teil der Float-Variablen
     float Bruch; // Ziffern nach dem Komma
 
     if (value >= 0) // Vorzeichen bestimmen und ausgeben
         LCD_Write('+', 1);
-    else
-    {
+    else {
         LCD_Write('-', 1);
         value = -value; // bei neg. number invertieren
     }

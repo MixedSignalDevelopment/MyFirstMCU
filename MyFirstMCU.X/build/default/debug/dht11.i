@@ -2554,26 +2554,22 @@ extern __bank0 __bit __timeout;
 static uint8_t dht11_byte[(5)];
 static uint8_t dht11_aux;
 # 59 "dht11.c"
-static uint8_t dht11_read_byte()
-{
+static uint8_t dht11_read_byte() {
     uint8_t i;
     dht11_aux = 0;
 
 
-    for (i = 0; i < 8; i++)
-    {
+    for (i = 0; i < 8; i++) {
 
         TMR0= 0;
-        while (!PORTAbits.RA6)
-        {
+        while (!PORTAbits.RA6) {
             if (TMR0 > (100)) return 0;
         }
 
 
 
         TMR0= 0;
-        while (PORTAbits.RA6)
-        {
+        while (PORTAbits.RA6) {
             if (TMR0 > (100)) return 0;
         }
 
@@ -2595,8 +2591,7 @@ static uint8_t dht11_read_byte()
 
 
 
-void dht11_config(void)
-{
+void dht11_config(void) {
     PORTAbits.RA6 = 0; TRISAbits.TRISA6 = 0;;
     _delay((unsigned long)((18)*((4000000L)/4000.0)));
     TRISAbits.TRISA6 = 1;;
@@ -2604,9 +2599,8 @@ void dht11_config(void)
     OPTION_REGbits.T0CS = 0; OPTION_REGbits.PSA = 1;
 
 }
-# 127 "dht11.c"
-uint8_t dht11_read(float *phum, float *ptemp)
-{
+# 122 "dht11.c"
+uint8_t dht11_read(float *phum, float *ptemp) {
     uint8_t i;
 
 
@@ -2616,22 +2610,19 @@ uint8_t dht11_read(float *phum, float *ptemp)
 
 
     TMR0= 0;
-    while (PORTAbits.RA6)
-    {
+    while (PORTAbits.RA6) {
         if (TMR0 > (100)) return 0;
     }
 
 
     TMR0= 0;
-    while (!PORTAbits.RA6)
-    {
+    while (!PORTAbits.RA6) {
         if (TMR0 > (100)) return 0;
     }
 
 
     TMR0= 0;
-    while (PORTAbits.RA6)
-    {
+    while (PORTAbits.RA6) {
         if (TMR0 > (100)) return 0;
     }
 
@@ -2639,12 +2630,11 @@ uint8_t dht11_read(float *phum, float *ptemp)
 
 
 
-    for (i = 0; i < (5); i++)
-    {
+    for (i = 0; i < (5); i++) {
         if (!dht11_read_byte()) return 0;
         dht11_byte[i] = dht11_aux;
     }
-# 175 "dht11.c"
+# 165 "dht11.c"
     *phum = ((float) dht11_byte[0]) + ((float) dht11_byte[1]) / 10;
     *ptemp = ((float) dht11_byte[2]) + ((float) dht11_byte[3]) / 10;
     return 1;

@@ -2728,8 +2728,7 @@ void LCD_Bin(uint8_t value);
 void LCD_Float(float value, uint8_t positions, uint8_t decimal_pos);
 # 7 "lcd_msd.c" 2
 # 30 "lcd_msd.c"
-uint32_t bit_config(uint32_t word, uint32_t bit_number, uint32_t bit_value)
-{
+uint32_t bit_config(uint32_t word, uint32_t bit_number, uint32_t bit_value) {
     uint32_t word_temp = word;
     word_temp ^= (-bit_value ^ word_temp) & (1 << bit_number);
     return word_temp;
@@ -2737,8 +2736,7 @@ uint32_t bit_config(uint32_t word, uint32_t bit_number, uint32_t bit_value)
 
 
 
-void LCD_Write(uint8_t character, uint8_t RS)
-{
+void LCD_Write(uint8_t character, uint8_t RS) {
     uint8_t data = PORTB;
 
     data = ((character >> 4) & 0x0F);
@@ -2754,8 +2752,7 @@ void LCD_Write(uint8_t character, uint8_t RS)
 
 
 
-void LCD_Clear(void)
-{
+void LCD_Clear(void) {
     LCD_Write(0x01, 0);
 
     _delay((unsigned long)((2)*(4000000/4000.0)));
@@ -2763,52 +2760,46 @@ void LCD_Clear(void)
 
 
 
-void LCD_Text(const char *s)
-{
-    while (*s)
-    {
+void LCD_Text(const char *s) {
+    while (*s) {
         LCD_Write(*s++, 1);
     }
 }
 
 
 
-void LCD_Char(char c)
-{
+void LCD_Char(char c) {
     LCD_Write(c, 1);
 }
 
 
 
-void LCD_Goto(uint8_t row, uint8_t pos)
-{
+void LCD_Goto(uint8_t row, uint8_t pos) {
     uint8_t data;
 
-    switch (row)
-    {
-    case 0:
-        data = 0x80 + 0x00 + pos;
-        break;
+    switch (row) {
+        case 0:
+            data = 0x80 + 0x00 + pos;
+            break;
 
-    case 1:
-        data = 0x80 + 0x40 + pos;
-        break;
+        case 1:
+            data = 0x80 + 0x40 + pos;
+            break;
 
-    case 2:
-        data = 0x80 + 0x10 + pos;
-        break;
+        case 2:
+            data = 0x80 + 0x10 + pos;
+            break;
 
-    case 3:
-        data = 0x80 + 0x50 + pos;
-        break;
+        case 3:
+            data = 0x80 + 0x50 + pos;
+            break;
     }
     LCD_Write(data, 0);
 }
 
 
 
-void LCD_Init()
-{
+void LCD_Init() {
     TRISB = TRISB & 0b11010000u;
     TRISCbits.TRISC1 = 0;
     TRISCbits.TRISC3 = 0;
@@ -2846,8 +2837,7 @@ void LCD_Init()
 
 
 
-void LCD_Int(uint32_t value, uint8_t positions, uint8_t zeros)
-{
+void LCD_Int(uint32_t value, uint8_t positions, uint8_t zeros) {
     uint16_t i;
     uint8_t buf[8];
 
@@ -2871,8 +2861,7 @@ void LCD_Int(uint32_t value, uint8_t positions, uint8_t zeros)
 
 
 
-void LCD_Hex(uint16_t value)
-{
+void LCD_Hex(uint16_t value) {
     uint16_t i;
     uint8_t buf[4];
 
@@ -2892,8 +2881,7 @@ void LCD_Hex(uint16_t value)
 
 
 
-void LCD_Bin(uint8_t value)
-{
+void LCD_Bin(uint8_t value) {
     uint16_t i;
     uint8_t buf[8];
 
@@ -2912,16 +2900,14 @@ void LCD_Bin(uint8_t value)
 
 
 
-void LCD_Float(float value, uint8_t positions, uint8_t decimal_pos)
-{
+void LCD_Float(float value, uint8_t positions, uint8_t decimal_pos) {
     uint8_t i;
     uint32_t number;
     float Bruch;
 
     if (value >= 0)
         LCD_Write('+', 1);
-    else
-    {
+    else {
         LCD_Write('-', 1);
         value = -value;
     }

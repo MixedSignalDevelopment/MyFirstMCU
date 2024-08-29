@@ -56,26 +56,22 @@ static uint8_t dht11_aux;
  *              0 si hubo timeout / 0 there was timeout
  * @note        Save the result in a global variable (dht11_aux)
  */
-static uint8_t dht11_read_byte()
-{
+static uint8_t dht11_read_byte() {
     uint8_t i;
     dht11_aux = 0;
 
     // Recieve 8 bits
-    for (i = 0; i < 8; i++)
-    {
+    for (i = 0; i < 8; i++) {
         // Wait for a raising edge, low pulse is always 50us
         dht11_TMR_Reset();
-        while (!dht11_GPIO_Read())
-        {
+        while (!dht11_GPIO_Read()) {
             if (dht11_TMR_Read() > DHT11_TIMEOUT) return FALSE;
         }
 
         //Wait for raising edge and measure the high time
         //If the pulse is high 28us it means 0, if it lasts 70us its a 1
         dht11_TMR_Reset();
-        while (dht11_GPIO_Read())
-        {
+        while (dht11_GPIO_Read()) {
             if (dht11_TMR_Read() > DHT11_TIMEOUT) return FALSE;
         }
 
@@ -97,14 +93,13 @@ static uint8_t dht11_read_byte()
  * @brief       Init and config te timer
  * @return      void
  */
-void dht11_config(void)
-{
+void dht11_config(void) {
     dht11_GPIO_Low();
     __delay_ms(18);
     dht11_GPIO_High();
     __delay_us(30);
     dht11_TMR_Config()
-    
+
 }
 
 //void dht11_config()
@@ -124,8 +119,7 @@ void dht11_config(void)
  * @return      1 if the readout was correct
  *              0 there was timeout or error checksum
  */
-uint8_t dht11_read(float *phum, float *ptemp)
-{
+uint8_t dht11_read(float *phum, float *ptemp) {
     uint8_t i;
 
     // Start signal of at least 18ms
@@ -135,22 +129,19 @@ uint8_t dht11_read(float *phum, float *ptemp)
 
     // Wait for falling edge as a response
     dht11_TMR_Reset();
-    while (dht11_GPIO_Read())
-    {
+    while (dht11_GPIO_Read()) {
         if (dht11_TMR_Read() > DHT11_TIMEOUT) return FALSE; // Return FALSE if there was a timeout
     }
 
     // Wait for response rising edge (80 us)
     dht11_TMR_Reset();
-    while (!dht11_GPIO_Read())
-    {
+    while (!dht11_GPIO_Read()) {
         if (dht11_TMR_Read() > DHT11_TIMEOUT) return FALSE; // Return FALSE if there was a timeout
     }
 
     // Wait for response falling edge (80 us)
     dht11_TMR_Reset();
-    while (dht11_GPIO_Read())
-    {
+    while (dht11_GPIO_Read()) {
         if (dht11_TMR_Read() > DHT11_TIMEOUT) return FALSE; // Return FALSE if there was a timeout
     }
 
@@ -158,8 +149,7 @@ uint8_t dht11_read(float *phum, float *ptemp)
     //     8 bits int part of RH, 8 decimal part of RH
     //     8 bits int part T , 8 bits decimal part T
     //     8 bits checksum
-    for (i = 0; i < DHT11_DATA_SIZE; i++)
-    {
+    for (i = 0; i < DHT11_DATA_SIZE; i++) {
         if (!dht11_read_byte()) return FALSE; // Return FALSE if there was a timeout
         dht11_byte[i] = dht11_aux;
     }

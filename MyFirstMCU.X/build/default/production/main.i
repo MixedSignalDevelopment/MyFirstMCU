@@ -2594,39 +2594,40 @@ uint16_t duty_cycle = 0;
 uint16_t pot_value = 0;
 uint16_t led_on = 1;
 
+volatile uint8_t tick = 1;
+uint32_t tick_counter = 0;
+
 float hum, temp;
 
-__isr()
-{
-    if(TMR1IF)
-    {
-        TMR1H = 0x00;
-        TMR1L = 0xDB;
+void __attribute__((picinterrupt(("")))) isr(void) {
+    if (TMR1IF) {
+        TMR1H = 0xF6;
+        TMR1L = 0x3B;
+        tick = 0;
         TMR1IF = 0;
-        PORTAbits.RA3 = ~PORTAbits.RA3;
     }
 }
 
 
 
-void ADC_Init()
-{
+
+void ADC_Init() {
     ANSEL = 0b00010000;
     ADCON0 = 0b10010001;
     ADCON1 = 0b00000000;
 }
 
 
-unsigned int ADC_Read()
-{
+
+unsigned int ADC_Read() {
     GO_nDONE = 1;
     while (GO_nDONE);
     return ((ADRESH << 8) + ADRESL);
 }
 
 
-void PWM_Init()
-{
+
+void PWM_Init() {
     TRISCbits.TRISC2 = 0;
 
 
@@ -2642,8 +2643,8 @@ void PWM_Init()
 }
 
 
-void main(void)
-{
+
+void main(void) {
 
     TRISAbits.TRISA0 = 1;
     TRISAbits.TRISA1 = 1;
@@ -2663,9 +2664,9 @@ void main(void)
     TRISAbits.TRISA7 = 0;
     PORTAbits.RA7 = 0;
 
-    TMR1H = 0x00;
-    TMR1L = 0xDB;
-    T1CON = 0b00110000;
+    TMR1H = 0xF6;
+    TMR1L = 0x3B;
+    T1CON = 0b00010000;
     PIE1 = 0b00000001;
     INTCON = 0b11000000;
     TMR1ON = 1;
@@ -2673,24 +2674,28 @@ void main(void)
     PORTAbits.RA3 = 0;
     PORTAbits.RA4 = 0;
 
-    while (1)
-    {
-
-
-
-        dht11_read(&hum, &temp);
-
-        LCD_Goto(0, 0);
-        LCD_Float(temp, 5, 2);
-        LCD_Goto(1, 0);
-        LCD_Float(hum, 5, 2);
+    while (1) {
 
 
 
 
+        while (tick);
+        tick = 1;
+        tick_counter++;
 
-        if (led_on == 1)
-        {
+
+        if ((tick_counter % 100) == 0) {
+            PORTAbits.RA3 = ~PORTAbits.RA3;
+            dht11_read(&hum, &temp);
+
+            LCD_Goto(0, 0);
+            LCD_Float(temp, 5, 2);
+            LCD_Goto(1, 0);
+            LCD_Float(hum, 5, 2);
+        }
+
+
+        if (led_on == 1) {
 
             pot_value = ADC_Read();
 
@@ -2698,8 +2703,7 @@ void main(void)
 
             CCPR1L = duty_cycle;
         }
-        if (PORTAbits.RA0 == 0)
-        {
+        if (PORTAbits.RA2 == 0) {
 
             led_on = led_on * (-1);
             CCPR1L = 0;
